@@ -40,4 +40,15 @@ socket.onmessage = function(event){
     if(date.type == "game_map") map = date.m
     if(date.type == "start_map") start_map = date.m
     if(date.type == "goast_map") goast_map = date.m
+
+    if(date.type == "get_player_pos" && flag){ // 人回覆位置
+        socket.send(JSON.stringify({
+            type:'set_player_pos',
+            min_x: min_x,
+            min_y: min_y
+        }))
+    }
+    if(date.type == "set_player_pos" && !flag){ // 鬼收到位置
+        add_player_pos(detect_pos_map, date.min_x, date.min_y)
+    }
 }

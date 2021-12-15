@@ -54,7 +54,7 @@ let player_pos
 let create_pos = [new Vector2(7,7), new Vector2(37,37), new Vector2(37,7), new Vector2(7,37), new Vector2(22,22)] // 最後一個是goast
 
 function player_controller(map){
-    switch_map()
+    if(start_game) switch_map()
     if(map[player_pos.x][player_pos.y]==-89){
         console.log("dead")
         player = -89 // 死了
@@ -189,8 +189,7 @@ function game_begin(){
 
 let isLeft = false, isRight = false, isUp = false, isDown = false
 function goast_controller(map){
-    switch_map()
-    console.log(player)
+    if(start_game) switch_map()
     if (keystate["KeyW"]) {
         movement(map, Vector2.get_up(), player) 
         isUp = true; isLeft = false; isDown = false; isRight = false  
@@ -208,12 +207,6 @@ function goast_controller(map){
         isRight = true; isLeft = false; isUp = false; isDown = false
     }
 
-    if (keystate["KeyJ"]) {
-        grasp()
-    }
-    /*if (keystate["KeyK"]) {
-        
-    }*/
     if(map == start_map){ // 鬼這邊不會用到
         socket.send(JSON.stringify({
             type:'start_map',
@@ -221,6 +214,16 @@ function goast_controller(map){
         }))
     }
     else{
+        if (keystate["KeyJ"]) {
+            grasp()
+            if(detect_game_over()) console.log("goast win")
+        }
+        if (keystate["KeyK"]) { // 偵測玩家位置
+            set_map_all(detect_pos_map, 0)
+            socket.send(JSON.stringify({
+                type:'get_player_pos',
+            }))
+        }
         // 把地圖推到伺服器
         socket.send(JSON.stringify({
             type:'goast_map',
@@ -252,9 +255,53 @@ function grasp_dir(dir){
     if(DoubleListHelper.get_elements(map, player_pos, dir)<0){
         console.log("grasp!!!")
         DoubleListHelper.set_elements(map, player_pos, dir, -89)
-        socket.send(JSON.stringify({
+        socket.send(JSON.stringify({ // 讓玩家變成 "死" 後傳回
             type:'game_map',
             m: map
         }))
     }
+}
+
+let detect_pos_map = [[0,0,0],[0,0,0],[0,0,0],]
+function print_detect_map(map){
+    let temp = [], P_map
+    for(let x = 0; x < map.length; x++){
+        for(let y = 0; y < map[x].length; y++){
+            if(map[x][y] == 0){
+                map[x][y] = `<a style="visibility: hidden; color: #00ADB5">無</a>`
+            } 
+        } 
+        temp.push(map[x].join(""))
+    }
+    P_map = temp.join("<br>")
+    return P_map
+}
+
+function add_player_pos(map, min_x, min_y){ // 在client觸發
+    for(let x = 0; x < map.length; x++){
+        for(let y = 0; y < map[x].length; y++){
+            if(x == min_x/15 && y == min_y/15 && !dead) map[x][y] = "人"
+        } 
+    }
+}
+
+function set_map_all(map, element){
+    for(let x = 0; x < map.length; x++){
+        for(let y = 0; y < map[x].length; y++){
+            map[x][y] = element
+        } 
+    }
+}
+
+
+
+function detect_game_over(){ // 確認地圖上是否有玩家
+    let flag = true
+    for(let x = 0; x < map.length; x++){
+        for(let y = 0; y < map[x].length; y++){
+            if(map[x][y]!=-89 && map[x][y]<0) flag = false // 帶表還有玩家
+        }
+    }
+    console.log("detect:", flag)
+    return flag  // true --> 玩家全滅 flase --> 還有玩家
 }

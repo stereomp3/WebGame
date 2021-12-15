@@ -59,12 +59,12 @@ function startAnimating(fps) {
 
 function draw(map) {
     document.getElementById("game").innerHTML = parse_map(init_map(map))
-    document.getElementById("small_map").innerHTML = `<br> 小地圖 <br><br>`+print_small_map()
+    if(start_game)document.getElementById("small_map").innerHTML = `<br> 小地圖 <br><br>`+print_small_map()
 }
 
 function draw_goast(map){
     document.getElementById("goast_area").innerHTML = parse_map(init_map(map))
-    //document.getElementById("goast_small_map").innerHTML = `<br> 小地圖 <br><br>`+print_small_map()
+    document.getElementById("show_player_pos").innerHTML = `<br> 小地圖 <br><br>`+print_detect_map(detect_pos_map)
 }
 
 function game_init(){ // 觸發一次 // 碰到 玩 觸發
@@ -143,7 +143,7 @@ function print_small_map(){
     let s_map = [[0,0,0],[0,0,0],[0,0,0],], temp = [], P_map
     for(let x = 0; x < 3; x++){
         for(let y = 0; y < 3; y++){
-            s_map[x][y] = "無"
+            s_map[x][y] = "囗"
             if(!flag){
                 if(x == min_x/15 && y == min_y/15) s_map[x][y] = "鬼"
             }
