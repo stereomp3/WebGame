@@ -6,11 +6,13 @@ let seat = [false, false, false, false]
 let id = 0, count = 0, t_tmp = 0// token_move會用到
 let token = [0,0,0,0] // 紀錄client seat位置
 let id_flag = false
-
+let timer = 0, f_time = Date.now(), b_time
 
 wss.on("connection", function (ws: WebSocketClient) {
 	ws.on("message", function (message: string) { 
 		let text = JSON.parse(message)
+		
+		if(text.type == "start") timer = 0 // 重製時間
 		if(text.type == "id") {
 			count = 0
 			wss.clients.forEach(function each(client) {
@@ -45,6 +47,17 @@ wss.on("connection", function (ws: WebSocketClient) {
 				}
 			});
 		}			
+
+		if(time_flow()){
+			wss.clients.forEach(function each(client) {
+				if (!client.isClosed) {
+					client.send(JSON.stringify({
+						type:'timer',
+						t: timer
+					}));  // broadcast message
+				}
+			});
+		}
 	}),
 	ws.on("close", function(){ 
 		console.log("close")
@@ -74,3 +87,12 @@ function token_move(list: number[], count: number){ // 向左移動
 	token[count] = t_tmp
 }
 
+function time_flow(){
+	b_time = Date.now()
+	if(Math.abs(f_time-b_time)>=1000){  // Data.now是ms為單位
+		f_time = Date.now()
+		console.log(f_time)
+		timer += 1
+		return true
+	}
+}

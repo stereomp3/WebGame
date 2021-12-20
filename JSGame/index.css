@@ -68,7 +68,7 @@ body {
     position: absolute;
     color: #ffffff;
     padding: 10px;
-    width: 10%;
+    width: 20%;
     margin-top: 10%;
     margin-left: 10%;
     overflow:hidden;
@@ -81,9 +81,20 @@ body {
     position: absolute;
     color: #ffffff;
     padding: 10px;
-    width: 10%;
+    width: 20%;
     margin-top: 10%;
     margin-left: 10%;
     overflow:hidden;
+}
+
+#instruction{
+    text-align: center;
+    font-size: 1.5vw;
+    z-index: 101;
+    top: 20%;
+    margin-left: 20%;
+    position: fixed;
+    color: #222831;
+    background-color: #EEEEEE;
 }
 

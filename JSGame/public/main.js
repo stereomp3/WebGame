@@ -1,11 +1,14 @@
-let fps, fpsInterval, startTime, timestamp = Date.now(), preTimestamp, progress, keystate = [], ispress = false;
-let __player = -99, player = -99
-let goast = 100
-let flag = true, start_game = false, dead = false  // flag: true = 人, false = 鬼
+let FPS = 10, fpsInterval, startTime, timestamp = Date.now(), preTimestamp, progress, timer = 0, win_time = 200; 
+let keystate = [], ispress = false;
+let __player = -99, player = -99;
+let goast = 100;
+let flag = true, start_game = false, game_over = false; dead = false, goast_win = false;  // flag: true = 人, false = 鬼
+
 
 function StartScence(){
+    timer = 0; goast_win = false
     startAnimating(10) // 調整fps
-    input_detect()
+    console.log("in")
     if(id==1) flag = false  // 鬼
     create_player(create_pos[0], start_map)
     player_pos = set_postion(start_map, __player)
@@ -14,6 +17,7 @@ function StartScence(){
         progress = timestamp - preTimestamp;
         if (progress > fpsInterval) { 
             if(!start_game){
+                game_instruction()
                 game_begin()
             }
             else {
@@ -30,22 +34,81 @@ function StartScence(){
 }
 
 function MainGame() {
-    startAnimating(10) // 調整fps
+    document.getElementById("instruction").innerHTML = ``
+    startAnimating(FPS) // 調整fps
     create_people()
     //random_item(25) // 1/25
     var loop = function () {
         timestamp = Date.now(); //調整速率
         progress = timestamp - preTimestamp;
         if (progress > fpsInterval) { 
-            startAnimating(10);
+            startAnimating(FPS);
+            if(game_over){
+                GameOverScence()
+                draw_goast(goast_map)
+                return 0
+            }
             if(flag) {
                 player_controller(map)
             }
             else {
                 goast_controller(goast_map)
             }
+
+            if((timer > win_time && !detect_game_over()) || goast_win){
+                console.log("game_over")
+                socket.send(JSON.stringify({
+                    type:'game_over',
+                    flag: goast_win
+                })) 
+            } 
+
             draw(map)
             draw_goast(goast_map)
+        }
+        window.requestAnimationFrame(loop);
+    }
+    window.requestAnimationFrame(loop);
+}
+
+function GameOverScence(){
+    startAnimating(10) // 調整fps
+    player_pos = set_postion(win_map, -99)
+    min_x = 0; max_x = 15; min_y = 0; max_y = 15;
+    var loop = function () {
+        timestamp = Date.now(); //調整速率
+        progress = timestamp - preTimestamp;
+        if (progress > fpsInterval) { 
+            startAnimating(10);
+            if(goast_win){
+                console.log("goast win")
+                if(flag) {
+                    draw(lose_map)
+                    player_controller(lose_map)
+                }  
+                else {
+                    draw(win_map) 
+                    player_controller(win_map)
+                }
+            }
+            else{
+                console.log("player win!!")
+                if(flag) {
+                    draw(win_map) 
+                    player_controller(win_map)
+                } 
+                else {
+                    draw(lose_map)
+                    player_controller(lose_map)
+                }
+            }
+            if(game_reset()==-1){
+                location.reload() // 重新整理 XD
+                game_over = false
+                console.log("restart")
+                // 鬼固定 時間統一 地圖重新判定
+                return 0
+            }
         }
         window.requestAnimationFrame(loop);
     }
@@ -59,28 +122,45 @@ function startAnimating(fps) {
 
 function draw(map) {
     document.getElementById("game").innerHTML = parse_map(init_map(map))
-    if(start_game)document.getElementById("small_map").innerHTML = `<br> 小地圖 <br><br>`+print_small_map()
+    if(start_game){
+        //timer += 1/FPS
+        document.getElementById("small_map").innerHTML = `時間: `+timer.toFixed(0)+`<br><br> 小地圖 <br><br>`+print_small_map()
+    }
+    else{
+        document.getElementById("small_map").innerHTML = ``
+    }
 }
 
 function draw_goast(map){
-    document.getElementById("goast_area").innerHTML = parse_map(init_map(map))
-    document.getElementById("show_player_pos").innerHTML = `<br> 小地圖 <br><br>`+print_detect_map(detect_pos_map)
+    if(start_game) {
+        document.getElementById("goast_area").innerHTML = parse_map(init_map(map))
+        document.getElementById("show_player_pos").innerHTML = `<br><br> 小地圖 <br><br>`+print_detect_map(detect_pos_map)
+    }
+    else{
+        document.getElementById("goast_area").innerHTML = ``
+        document.getElementById("show_player_pos").innerHTML = ``
+    }
+   
 }
 
-function game_init(){ // 觸發一次 // 碰到 玩 觸發
-    socket.send(JSON.stringify({ // 讓所有人進入地圖
-        type:'start',
-        m: MainGame()
-    }))
+function game_init(){ // 觸發一次 // 碰到 玩 觸發  
     random_item(25)
     // 把地圖推到伺服器
     socket.send(JSON.stringify({
         type:'game_map',
         m: map
     })) 
+
+    socket.send(JSON.stringify({ // 讓所有人進入地圖
+        type:'start',
+        m: MainGame()
+    }))
+    
 }
 
 function create_people(){
+    console.log(map)
+    console.log("pos:",create_pos[id])
     if(flag){
         create_player(create_pos[id], map)
         console.log("person:",player_pos, "id:", id, "pos:", create_pos[id])
@@ -119,6 +199,13 @@ function init_map(map){
             if(Math.abs(map[x][y]) == 9) record_map[x-min_x].push(`備`) 
             if(Math.abs(map[x][y]) == 10) record_map[x-min_x].push(`玩`) 
             if(Math.abs(map[x][y]) == 11) record_map[x-min_x].push(`抓`) 
+            if(Math.abs(map[x][y]) == 12) record_map[x-min_x].push(`贏`)
+            if(Math.abs(map[x][y]) == 13) record_map[x-min_x].push(`輸`)
+            if(Math.abs(map[x][y]) == 14) record_map[x-min_x].push(`了`)
+            if(Math.abs(map[x][y]) == 15) record_map[x-min_x].push(`重`)
+            if(Math.abs(map[x][y]) == 16) record_map[x-min_x].push(`新`)
+            if(Math.abs(map[x][y]) == 18) record_map[x-min_x].push(`說`)
+            if(Math.abs(map[x][y]) == 19) record_map[x-min_x].push(`明`)
             if(Math.abs(map[x][y]) == 3) record_map[x-min_x].push(`樹`)  
             if(Math.abs(map[x][y]) == 1) record_map[x-min_x].push(`牆`)  
             

@@ -186,6 +186,32 @@ function game_begin(){
     if(DoubleListHelper.get_elements(start_map, player_pos, Vector2.get_up())==10) game_init()
     //if(DoubleListHelper.get_elements(start_map, player_pos, Vector2.get_down())==10) game_init()
 }
+function game_instruction(){
+    if(DoubleListHelper.get_elements(start_map, player_pos, Vector2.get_right())==18){
+        document.getElementById("instruction").innerHTML = `
+        <br>
+            =====================遊戲說明==================== <br> <br>
+            ==============用WASD控制人物上下左右============= <br> <br>
+            =====================在遊戲中==================== <br> <br>
+            我:按下J可以變成旁邊的文字，按下K可以變回原本的樣子 <br>
+            鬼:按下J可以抓人，按下K可以在小地圖偵測玩家位置 <br>
+            經過200秒如果鬼沒有抓到人的話，就算鬼輸，反之則人贏 <br> <br>
+            ================================================ <br> <br>
+        `
+    }
+    else{
+        document.getElementById("instruction").innerHTML = ` `
+    }
+
+}
+function game_reset(){
+    if(DoubleListHelper.get_elements(lose_map, player_pos, Vector2.get_right())==15){ // '重'新玩
+        return -1
+    }
+    if(DoubleListHelper.get_elements(win_map, player_pos, Vector2.get_right())==15){ // '重'新玩
+        return -1
+    }
+}
 
 let isLeft = false, isRight = false, isUp = false, isDown = false
 function goast_controller(map){
@@ -216,7 +242,9 @@ function goast_controller(map){
     else{
         if (keystate["KeyJ"]) {
             grasp()
-            if(detect_game_over()) console.log("goast win")
+            if(detect_game_over()) {
+                goast_win = true
+            }
         }
         if (keystate["KeyK"]) { // 偵測玩家位置
             set_map_all(detect_pos_map, 0)

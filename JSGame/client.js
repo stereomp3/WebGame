@@ -8,7 +8,6 @@ socket.onopen = async function (event) {
         type:'id',
         id: 0
     }))
-    
 }
 socket.onerror = function (event) { console.log('socket:onerror()...') }
 // websocket關閉時觸發
@@ -24,12 +23,22 @@ socket.onmessage = function(event){
         id = date.id
         __player += id
         player = __player
+        input_detect()
         StartScence()
     }
     if(date.type == "start"){
         console.log("start!!")
         console.log(__player)
         start_game = true // 開始遊戲
+    }
+    if(date.type == "game_over"){
+        console.log("game over!!")
+        console.log(__player)
+        start_game = false // 結束遊戲
+        game_over = true
+        __player = -99
+        player = -99
+        goast_win = date.flag
     }
     if(date.type == "close"){
         socket.send(JSON.stringify({
@@ -50,5 +59,9 @@ socket.onmessage = function(event){
     }
     if(date.type == "set_player_pos" && !flag){ // 鬼收到位置
         add_player_pos(detect_pos_map, date.min_x, date.min_y)
+    }
+
+    if(date.type == "timer"){
+        timer = date.t
     }
 }
