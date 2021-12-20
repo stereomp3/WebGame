@@ -7,6 +7,8 @@ let id = 0, count = 0, t_tmp = 0// token_move會用到
 let token = [0,0,0,0] // 紀錄client seat位置
 let id_flag = false
 let timer = 0, f_time = Date.now(), b_time
+let start_map, main_map, game_map, goast_map, win_map, lose_map
+
 
 wss.on("connection", function (ws: WebSocketClient) {
 	ws.on("message", function (message: string) { 
@@ -39,14 +41,40 @@ wss.on("connection", function (ws: WebSocketClient) {
 			id = 0
 			ws.send(JSON.stringify(text)); // 單向
 		}
-		else{ // map // start
-			// forEach是回乎函數，只要client沒關，這個就還會在，這邊做的效果是任何人傳訊息都會廣播給所有人
+		else if(text.type == "game_map"){ 
+			game_map = text.m
+			text.m = game_map
 			wss.clients.forEach(function each(client) {
 				if (!client.isClosed) {
-					client.send(message);  // broadcast message
+					client.send(message);  
 				}
 			});
-		}			
+		}		
+		else if(text.type == "start_map"){
+			start_map = text.m
+			text.m = start_map
+			wss.clients.forEach(function each(client) {
+				if (!client.isClosed) {
+					client.send(message);  
+				}
+			});
+		}
+		else if(text.type == "goast_map"){
+			goast_map = text.m
+			text.m = goast_map
+			wss.clients.forEach(function each(client) {
+				if (!client.isClosed) {
+					client.send(message);  
+				}
+			});
+		}	
+		else{
+			wss.clients.forEach(function each(client) {
+				if (!client.isClosed) {
+					client.send(message);  
+				}
+			});
+		}
 
 		if(time_flow()){
 			wss.clients.forEach(function each(client) {
