@@ -53,27 +53,43 @@ class DoubleListHelper{
 let player_pos
 let create_pos = [new Vector2(7,7), new Vector2(37,37), new Vector2(37,7), new Vector2(7,37), new Vector2(22,22)] // 最後一個是goast
 
-function player_controller(map){
+function player_controller(map, pos_map){
     if(start_game) switch_map()
-    if(map[player_pos.x][player_pos.y]==-89){
-        console.log("dead")
-        player = -89 // 死了
-        dead = true
+    if(id == 0){
+        if(p1_map[player_pos.x][player_pos.y]==-89){
+            console.log("dead")
+            player = -89 // 死了
+            dead = true
+        }
+    }
+    if(id == 2){
+        if(p2_map[player_pos.x][player_pos.y]==-89){
+            console.log("dead")
+            player = -89 // 死了
+            dead = true
+        }
+    }
+    if(id == 3){
+        if(p3_map[player_pos.x][player_pos.y]==-89){
+            console.log("dead")
+            player = -89 // 死了
+            dead = true
+        }
     }
     if (keystate["KeyW"]) {
         //console.log(DoubleListHelper.get_elements(map, position, Vector2.get_up()))
-        movement(map, Vector2.get_up(), player)    
+        movement(map, Vector2.get_up(), player, pos_map)    
     }
     if (keystate["KeyA"]) {
         //console.log(DoubleListHelper.get_elements(map, position, Vector2.get_left(),3)[2])
-        movement(map, Vector2.get_left(), player)
+        movement(map, Vector2.get_left(), player, pos_map)
     }
     if (keystate["KeyS"]) {
-        movement(map, Vector2.get_down(), player)
+        movement(map, Vector2.get_down(), player, pos_map)
     }
     if (keystate["KeyD"]) {
         //console.log(DoubleListHelper.get_elements(map, position, Vector2.get_right()))
-        movement(map, Vector2.get_right(), player)
+        movement(map, Vector2.get_right(), player, pos_map)
     }
     
     if(map == start_map){
@@ -81,6 +97,30 @@ function player_controller(map){
             type:'start_map',
             m: map
         }))
+        if(id == 0){
+            socket.send(JSON.stringify({
+                type:'p1_start_map',
+                m: p1_start_map
+            }))
+        }
+        if(id == 1){
+            socket.send(JSON.stringify({
+                type:'p2_start_map',
+                m: p2_start_map
+            }))
+        }
+        if(id == 2){
+            socket.send(JSON.stringify({
+                type:'p3_start_map',
+                m: p3_start_map
+            }))
+        }
+        if(id == 3){
+            socket.send(JSON.stringify({
+                type:'p4_start_map',
+                m: p4_start_map
+            }))
+        }
     }
     else{
         if (keystate["KeyJ"] && !dead) {
@@ -94,6 +134,24 @@ function player_controller(map){
             type:'game_map',
             m: map
         }))
+        if(id == 0){
+            socket.send(JSON.stringify({
+                type:'p1_map',
+                m: p1_map
+            }))
+        }
+        if(id == 2){
+            socket.send(JSON.stringify({
+                type:'p2_map',
+                m: p2_map
+            }))
+        }
+        if(id == 3){
+            socket.send(JSON.stringify({
+                type:'p3_map',
+                m: p3_map
+            }))
+        }
     }
     
 }
@@ -124,11 +182,13 @@ function push(map, vect_dir, item){
     DoubleListHelper.set_elements(map, p, vect_dir, item)
 }
 
-function movement(map, vect_dir, player){
+function movement(map, vect_dir, player, pos_map){
     if(DoubleListHelper.get_elements(map, player_pos, vect_dir)==2 && DoubleListHelper.get_elements(map, item_pos(vect_dir), vect_dir)==0 && !dead){
         push(map, vect_dir, 2)
     }
-    if(DoubleListHelper.get_elements(map, player_pos, vect_dir)==0) move(map, vect_dir, player)   
+    if(DoubleListHelper.get_elements(map, player_pos, vect_dir)==0) move(pos_map, vect_dir, player)   
+    map_clear(pos_map)
+    map_clear(map)
 }
 function switch_map(){
     if(player_pos.x >= max_x){
@@ -195,7 +255,8 @@ function game_instruction(){
             =====================在遊戲中==================== <br> <br>
             我:按下J可以變成旁邊的文字，按下K可以變回原本的樣子 <br>
             鬼:按下J可以抓人，按下K可以在小地圖偵測玩家位置 <br>
-            經過200秒如果鬼沒有抓到人的話，就算鬼輸，反之則人贏 <br> <br>
+            經過200秒如果鬼沒有抓到人的話，就算鬼輸，反之則人贏 <br> 
+            一次最多可以4人遊玩 !! <br> <br>
             ================================================ <br> <br>
         `
     }
@@ -217,19 +278,19 @@ let isLeft = false, isRight = false, isUp = false, isDown = false
 function goast_controller(map){
     if(start_game) switch_map()
     if (keystate["KeyW"]) {
-        movement(map, Vector2.get_up(), player) 
+        movement(map, Vector2.get_up(), player, map) 
         isUp = true; isLeft = false; isDown = false; isRight = false  
     }
     if (keystate["KeyA"]) {
-        movement(map, Vector2.get_left(), player)
+        movement(map, Vector2.get_left(), player, map)
         isLeft = true; isUp = false; isDown = false; isRight = false
     }
     if (keystate["KeyS"]) {
-        movement(map, Vector2.get_down(), player)
+        movement(map, Vector2.get_down(), player, map)
         isDown = true; isLeft = false; isUp = false; isRight = false
     }
     if (keystate["KeyD"]) {
-        movement(map, Vector2.get_right(), player)
+        movement(map, Vector2.get_right(), player, map)
         isRight = true; isLeft = false; isUp = false; isDown = false
     }
 
@@ -280,12 +341,28 @@ function grasp_dir(dir){
     setTimeout(() => {
         DoubleListHelper.set_elements(goast_map, player_pos, dir, 0)
     }, 1);
-    if(DoubleListHelper.get_elements(map, player_pos, dir)<0){
+    if(DoubleListHelper.get_elements(p1_map, player_pos, dir)<0){
         console.log("grasp!!!")
-        DoubleListHelper.set_elements(map, player_pos, dir, -89)
+        DoubleListHelper.set_elements(p1_map, player_pos, dir, -89)
         socket.send(JSON.stringify({ // 讓玩家變成 "死" 後傳回
-            type:'game_map',
-            m: map
+            type:'p1_map',
+            m: p1_map
+        }))
+    }
+    if(DoubleListHelper.get_elements(p2_map, player_pos, dir)<0){
+        console.log("grasp!!!")
+        DoubleListHelper.set_elements(p2_map, player_pos, dir, -89)
+        socket.send(JSON.stringify({ // 讓玩家變成 "死" 後傳回
+            type:'p2_map',
+            m: p2_map
+        }))
+    }
+    if(DoubleListHelper.get_elements(p3_map, player_pos, dir)<0){
+        console.log("grasp!!!")
+        DoubleListHelper.set_elements(p3_map, player_pos, dir, -89)
+        socket.send(JSON.stringify({ // 讓玩家變成 "死" 後傳回
+            type:'p3_map',
+            m: p3_map
         }))
     }
 }
@@ -332,4 +409,13 @@ function detect_game_over(){ // 確認地圖上是否有玩家
     }
     console.log("detect:", flag)
     return flag  // true --> 玩家全滅 flase --> 還有玩家
+}
+
+
+function map_clear(map){
+    for(let x = 0; x < map.length; x++){
+        for(let y = 0; y < map[x].length; y++){
+            if(map[x][y]<0 && (x!=player_pos.x || y!=player_pos.y)) map[x][y] = 0
+        } 
+    }
 }

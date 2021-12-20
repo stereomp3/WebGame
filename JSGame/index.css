@@ -98,3 +98,51 @@ body {
     background-color: #EEEEEE;
 }
 
+#p1_area{
+    line-height: 2vw; /*行高*/
+    /*letter-spacing: 0;  文字寬度*/
+    font-size: 2vw;
+    z-index: 100;
+    position: absolute;
+    color: #ffffff;
+    padding: 10px;
+    margin-top: 5%;
+    margin-left: 30%;
+    overflow:hidden;
+}
+#p2_area{
+    line-height: 2vw; /*行高*/
+    /*letter-spacing: 0;  文字寬度*/
+    font-size: 2vw;
+    z-index: 100;
+    position: absolute;
+    color: #ffffff;
+    padding: 10px;
+    margin-top: 5%;
+    margin-left: 30%;
+    overflow:hidden;
+}
+#p3_area{
+    line-height: 2vw; /*行高*/
+    /*letter-spacing: 0;  文字寬度*/
+    font-size: 2vw;
+    z-index: 100;
+    position: absolute;
+    color: #ffffff;
+    padding: 10px;
+    margin-top: 5%;
+    margin-left: 30%;
+    overflow:hidden;
+}
+#p4_area{
+    line-height: 2vw; /*行高*/
+    /*letter-spacing: 0;  文字寬度*/
+    font-size: 2vw;
+    z-index: 100;
+    position: absolute;
+    color: #ffffff;
+    padding: 10px;
+    margin-top: 5%;
+    margin-left: 30%;
+    overflow:hidden;
+}

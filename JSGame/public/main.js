@@ -25,7 +25,10 @@ function StartScence(){
                 return 0
             }
             startAnimating(10);
-            player_controller(start_map)
+            if(id == 0) player_controller(start_map, p1_start_map)
+            if(id == 1) player_controller(start_map, p2_start_map)
+            if(id == 2) player_controller(start_map, p3_start_map)
+            if(id == 3) player_controller(start_map, p4_start_map)
             draw(start_map)
         }
         window.requestAnimationFrame(loop);
@@ -49,7 +52,9 @@ function MainGame() {
                 return 0
             }
             if(flag) {
-                player_controller(map)
+                if(id == 0) player_controller(map, p1_map)
+                if(id == 2) player_controller(map, p2_map)
+                if(id == 3) player_controller(map, p3_map) 
             }
             else {
                 goast_controller(goast_map)
@@ -62,9 +67,7 @@ function MainGame() {
                     flag: goast_win
                 })) 
             } 
-
             draw(map)
-            draw_goast(goast_map)
         }
         window.requestAnimationFrame(loop);
     }
@@ -84,11 +87,11 @@ function GameOverScence(){
                 console.log("goast win")
                 if(flag) {
                     draw(lose_map)
-                    player_controller(lose_map)
+                    player_controller(lose_map, lose_map)
                 }  
                 else {
                     draw(win_map) 
-                    player_controller(win_map)
+                    player_controller(win_map, win_map)
                 }
             }
             else{
@@ -121,12 +124,19 @@ function startAnimating(fps) {
 }
 
 function draw(map) {
-    document.getElementById("game").innerHTML = parse_map(init_map(map))
+    draw_background(map)
+    draw_p1(p1_map)
+    draw_p2(p2_map)
+    draw_p3(p3_map)
+    draw_goast(goast_map)
     if(start_game){
-        //timer += 1/FPS
         document.getElementById("small_map").innerHTML = `時間: `+timer.toFixed(0)+`<br><br> 小地圖 <br><br>`+print_small_map()
     }
     else{
+        draw_p1(p1_start_map)
+        draw_p2(p2_start_map)
+        draw_p3(p3_start_map)
+        draw_p4(p4_start_map)
         document.getElementById("small_map").innerHTML = ``
     }
 }
@@ -140,7 +150,25 @@ function draw_goast(map){
         document.getElementById("goast_area").innerHTML = ``
         document.getElementById("show_player_pos").innerHTML = ``
     }
-   
+}
+function draw_background(map){
+    document.getElementById("game").innerHTML = parse_map(init_map(map))
+}
+function draw_p1(map){
+    if(!game_over) document.getElementById("p1_area").innerHTML = parse_map(init_map(map))
+    else document.getElementById("p1_area").innerHTML = ``
+}
+function draw_p2(map){
+    if(!game_over)document.getElementById("p2_area").innerHTML = parse_map(init_map(map))
+    else document.getElementById("p2_area").innerHTML = ``
+}
+function draw_p3(map){
+    if(!game_over)document.getElementById("p3_area").innerHTML = parse_map(init_map(map))
+    else document.getElementById("p3_area").innerHTML = ``
+}
+function draw_p4(map){
+    if(!game_over)document.getElementById("p4_area").innerHTML = parse_map(init_map(map))
+    else document.getElementById("p4_area").innerHTML = ``
 }
 
 function game_init(){ // 觸發一次 // 碰到 玩 觸發  

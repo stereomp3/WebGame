@@ -48,7 +48,15 @@ socket.onmessage = function(event){
     }
     if(date.type == "game_map") map = date.m
     if(date.type == "start_map") start_map = date.m
-    if(date.type == "goast_map") goast_map = date.m
+    if(date.type == "p1_start_map") p1_start_map = date.m
+    if(date.type == "p2_start_map") p2_start_map = date.m
+    if(date.type == "p3_start_map") p3_start_map = date.m
+    if(date.type == "p4_start_map") p4_start_map = date.m
+    if(date.type == "goast_map") goast_map = date.m // id: 1
+    if(date.type == "p1_map") p1_map = date.m // id: 0
+    if(date.type == "p2_map") p2_map = date.m // id: 2
+    if(date.type == "p3_map") p3_map = date.m // id: 3
+
 
     if(date.type == "get_player_pos" && flag){ // 人回覆位置
         socket.send(JSON.stringify({
