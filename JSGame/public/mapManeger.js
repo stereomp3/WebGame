@@ -164,10 +164,10 @@ function item_pos(vect_dir){
 }
 
 function change(p){
-    if(DoubleListHelper.get_elements(map, player_pos, Vector2.get_left())>=0) p = -DoubleListHelper.get_elements(map, player_pos, Vector2.get_left())
-    if(DoubleListHelper.get_elements(map, player_pos, Vector2.get_right())>=0) p = -DoubleListHelper.get_elements(map, player_pos, Vector2.get_right())
-    if(DoubleListHelper.get_elements(map, player_pos, Vector2.get_up())>=0) p = -DoubleListHelper.get_elements(map, player_pos, Vector2.get_up())
-    if(DoubleListHelper.get_elements(map, player_pos, Vector2.get_down())>=0) p = -DoubleListHelper.get_elements(map, player_pos, Vector2.get_down())
+    if(DoubleListHelper.get_elements(map, player_pos, Vector2.get_left())>0) p = -DoubleListHelper.get_elements(map, player_pos, Vector2.get_left())
+    if(DoubleListHelper.get_elements(map, player_pos, Vector2.get_right())>0) p = -DoubleListHelper.get_elements(map, player_pos, Vector2.get_right())
+    if(DoubleListHelper.get_elements(map, player_pos, Vector2.get_up())>0) p = -DoubleListHelper.get_elements(map, player_pos, Vector2.get_up())
+    if(DoubleListHelper.get_elements(map, player_pos, Vector2.get_down())>0) p = -DoubleListHelper.get_elements(map, player_pos, Vector2.get_down())
     DoubleListHelper.set_elements(map, player_pos, Vector2.stay(), p)
     return p
 }
