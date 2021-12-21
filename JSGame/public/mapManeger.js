@@ -402,9 +402,19 @@ function set_map_all(map, element){
 
 function detect_game_over(){ // 確認地圖上是否有玩家
     let flag = true
-    for(let x = 0; x < map.length; x++){
-        for(let y = 0; y < map[x].length; y++){
-            if(map[x][y]!=-89 && map[x][y]<0) flag = false // 帶表還有玩家
+    for(let x = 0; x < p1_map.length; x++){
+        for(let y = 0; y < p1_map[x].length; y++){
+            if(p1_map[x][y]!=-89 && p1_map[x][y]<0) flag = false // 帶表還有玩家
+        }
+    }
+    for(let x = 0; x < p2_map.length; x++){
+        for(let y = 0; y < p2_map[x].length; y++){
+            if(p2_map[x][y]!=-89 && p2_map[x][y]<0) flag = false // 帶表還有玩家
+        }
+    }
+    for(let x = 0; x < p3_map.length; x++){
+        for(let y = 0; y < p3_map[x].length; y++){
+            if(p3_map[x][y]!=-89 && p3_map[x][y]<0) flag = false // 帶表還有玩家
         }
     }
     console.log("detect:", flag)
