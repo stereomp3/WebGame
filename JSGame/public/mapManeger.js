@@ -255,7 +255,7 @@ function game_instruction(){
             =====================在遊戲中==================== <br> <br>
             我:按下J可以變成旁邊的文字，按下K可以變回原本的樣子 <br>
             鬼:按下J可以抓人，按下K可以在小地圖偵測玩家位置 <br>
-            經過200秒如果鬼沒有抓到人的話，就算鬼輸，反之則人贏 <br> 
+            經過150秒如果鬼沒有抓到人的話，就算鬼輸，反之則人贏 <br> 
             一次最多可以4人遊玩 !! <br> <br>
             ================================================ <br> <br>
         `
@@ -339,7 +339,7 @@ function grasp(){
 function grasp_dir(dir){
     DoubleListHelper.set_elements(goast_map, player_pos, dir, 11)
     setTimeout(() => {
-        DoubleListHelper.set_elements(goast_map, player_pos, dir, 0)
+        map_clear_element(goast_map, 11)
     }, 1);
     if(DoubleListHelper.get_elements(p1_map, player_pos, dir)<0){
         console.log("grasp!!!")
@@ -426,6 +426,14 @@ function map_clear(map){
     for(let x = 0; x < map.length; x++){
         for(let y = 0; y < map[x].length; y++){
             if(map[x][y]<0 && (x!=player_pos.x || y!=player_pos.y)) map[x][y] = 0
+        } 
+    }
+}
+
+function map_clear_element(map, element){
+    for(let x = 0; x < map.length; x++){
+        for(let y = 0; y < map[x].length; y++){
+            if(map[x][y] == element) map[x][y] = 0
         } 
     }
 }

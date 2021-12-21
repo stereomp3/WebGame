@@ -1,4 +1,4 @@
-let FPS = 10, fpsInterval, startTime, timestamp = Date.now(), preTimestamp, progress, timer = 0, win_time = 200; 
+let FPS = 10, fpsInterval, startTime, timestamp = Date.now(), preTimestamp, progress, timer = 0, win_time = 10; 
 let keystate = [], ispress = false;
 let __player = -99, player = -99;
 let goast = 100;
@@ -98,11 +98,11 @@ function GameOverScence(){
                 console.log("player win!!")
                 if(flag) {
                     draw(win_map) 
-                    player_controller(win_map)
+                    player_controller(win_map, win_map)
                 } 
                 else {
                     draw(lose_map)
-                    player_controller(lose_map)
+                    player_controller(lose_map, lose_map)
                 }
             }
             if(game_reset()==-1){
