@@ -1,4 +1,4 @@
-let FPS = 10, fpsInterval, startTime, timestamp = Date.now(), preTimestamp, progress, timer = 0, win_time = 10; 
+let FPS = 10, fpsInterval, startTime, timestamp = Date.now(), preTimestamp, progress, timer = 0, win_time = 150; 
 let keystate = [], ispress = false;
 let __player = -99, player = -99;
 let goast = 100;
