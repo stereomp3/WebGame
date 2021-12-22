@@ -339,7 +339,11 @@ function grasp(){
 function grasp_dir(dir){
     DoubleListHelper.set_elements(goast_map, player_pos, dir, 11)
     setTimeout(() => {
-        map_clear_element(goast_map, 11)
+        DoubleListHelper.set_elements(goast_map, player_pos, dir, 0)
+        socket.send(JSON.stringify({
+            type:'goast_map',
+            m: goast_map
+        }))
     }, 1);
     if(DoubleListHelper.get_elements(p1_map, player_pos, dir)<0){
         console.log("grasp!!!")

@@ -4,6 +4,7 @@ let __player = -99, player = -99;
 let goast = 100;
 let flag = true, start_game = false, game_over = false; dead = false, goast_win = false;  // flag: true = 人, false = 鬼
 
+// 鬼抓還會停在地圖上(在server)，需要解決
 
 function StartScence(){
     timer = 0; goast_win = false
