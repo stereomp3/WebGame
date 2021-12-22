@@ -430,6 +430,7 @@ function map_clear(map){
     for(let x = 0; x < map.length; x++){
         for(let y = 0; y < map[x].length; y++){
             if(map[x][y]<0 && (x!=player_pos.x || y!=player_pos.y)) map[x][y] = 0
+            if(map[x][y]==100 && (x!=player_pos.x || y!=player_pos.y)) map[x][y] = 0 // 鬼
         } 
     }
 }
